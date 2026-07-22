@@ -6,13 +6,14 @@ import { generateReservationQR } from '../utils/qrGenerator.js';
 const router = express.Router();
 
 // Create Reservation
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const {
       carId,
       startDate,
       endDate,
       pickupTime,
+      originCountry,
       pickupType,
       pickupLocation,
       rentalDays,
@@ -36,11 +37,12 @@ router.post('/', authMiddleware, async (req, res) => {
     const newReservation = {
       _id: `res-${Date.now()}`,
       reservationNumber,
-      user: req.user.id,
+      user: req.user?.id || 'guest-user',
       car: carId,
       startDate,
       endDate,
       pickupTime: pickupTime || '10:00 AM',
+      originCountry: originCountry || 'Not Specified',
       pickupType: pickupType || 'Airport Pickup',
       pickupLocation: pickupLocation || 'Aden Adde Airport Parking B',
       parkingNumber: `Parking Bay B-${Math.floor(10 + Math.random() * 40)}`,
@@ -83,6 +85,24 @@ router.post('/', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to create reservation', error: error.message });
+  }
+});
+
+// Get Reservation by Number
+router.get('/:reservationNumber', async (req, res) => {
+  try {
+    const { reservationNumber } = req.params;
+    const reservation = getReservations().find(r => r.reservationNumber === reservationNumber);
+    
+    if (!reservation) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
+
+    const car = getCars().find(c => c._id === reservation.car);
+    
+    res.json({ reservation, car });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

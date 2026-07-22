@@ -8,6 +8,40 @@ import EvidenceUploadModal from '../components/EvidenceUploadModal';
 import SomaliPaymentModal from '../components/SomaliPaymentModal';
 import QRPassModal from '../components/QRPassModal';
 
+const COUNTRIES = [
+  { name: 'Afghanistan', code: 'af' },
+  { name: 'Albania', code: 'al' },
+  { name: 'Algeria', code: 'dz' },
+  { name: 'Andorra', code: 'ad' },
+  { name: 'Angola', code: 'ao' },
+  { name: 'Antigua and Barbuda', code: 'ag' },
+  { name: 'Argentina', code: 'ar' },
+  { name: 'Australia', code: 'au' },
+  { name: 'Canada', code: 'ca' },
+  { name: 'China', code: 'cn' },
+  { name: 'Djibouti', code: 'dj' },
+  { name: 'Egypt', code: 'eg' },
+  { name: 'Ethiopia', code: 'et' },
+  { name: 'France', code: 'fr' },
+  { name: 'Georgia', code: 'ge' },
+  { name: 'Germany', code: 'de' },
+  { name: 'India', code: 'in' },
+  { name: 'Italy', code: 'it' },
+  { name: 'Kenya', code: 'ke' },
+  { name: 'Netherlands', code: 'nl' },
+  { name: 'Oman', code: 'om' },
+  { name: 'Qatar', code: 'qa' },
+  { name: 'Saudi Arabia', code: 'sa' },
+  { name: 'Somalia', code: 'so' },
+  { name: 'South Africa', code: 'za' },
+  { name: 'Sweden', code: 'se' },
+  { name: 'Turkey', code: 'tr' },
+  { name: 'United Arab Emirates', code: 'ae' },
+  { name: 'United Kingdom', code: 'gb' },
+  { name: 'United States of America', code: 'us' },
+  { name: 'Yemen', code: 'ye' }
+];
+
 export default function BookingPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -18,9 +52,12 @@ export default function BookingPage() {
   // Form step state
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
-  const [pickupTime, setPickupTime] = useState('02:00 PM');
+  const [pickupTime, setPickupTime] = useState('14:00');
   const [pickupType, setPickupType] = useState('Airport Pickup');
   const [pickupLocation, setPickupLocation] = useState('Aden Adde Airport Parking B');
+  const [originCountry, setOriginCountry] = useState('');
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const filteredCountries = COUNTRIES.filter(c => c.name.toLowerCase().includes(originCountry.toLowerCase()));
 
   // Completed steps & modals
   const [signedName, setSignedName] = useState('');
@@ -89,6 +126,7 @@ export default function BookingPage() {
       startDate,
       endDate,
       pickupTime,
+      originCountry,
       pickupType,
       pickupLocation,
       rentalDays,
@@ -155,8 +193,12 @@ export default function BookingPage() {
                 <label className="text-xs text-slate-400 mb-1 block">Arrival Date</label>
                 <input
                   type="date"
+                  min={new Date().toISOString().split('T')[0]}
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    if (e.target.value > endDate) setEndDate(e.target.value);
+                  }}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500"
                 />
               </div>
@@ -165,6 +207,7 @@ export default function BookingPage() {
                 <label className="text-xs text-slate-400 mb-1 block">Return Date</label>
                 <input
                   type="date"
+                  min={startDate}
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500"
@@ -173,16 +216,58 @@ export default function BookingPage() {
 
               <div>
                 <label className="text-xs text-slate-400 mb-1 block">Pickup Time</label>
-                <select
+                <input
+                  type="time"
                   value={pickupTime}
                   onChange={(e) => setPickupTime(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500"
-                >
-                  <option value="08:00 AM">08:00 AM</option>
-                  <option value="10:00 AM">10:00 AM</option>
-                  <option value="02:00 PM">02:00 PM</option>
-                  <option value="06:00 PM">06:00 PM</option>
-                </select>
+                />
+              </div>
+
+              <div className="relative">
+                <label className="text-xs text-slate-400 mb-1 block">Expected Country of Origin</label>
+                <input
+                  type="text"
+                  placeholder="Where are you traveling from?"
+                  value={originCountry}
+                  onChange={(e) => {
+                    setOriginCountry(e.target.value);
+                    setShowCountryDropdown(true);
+                  }}
+                  onFocus={() => setShowCountryDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowCountryDropdown(false), 200)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500"
+                />
+                
+                {/* Custom Autocomplete Dropdown */}
+                {showCountryDropdown && (
+                  <div className="absolute z-50 w-full mt-1 bg-slate-50 border border-slate-300 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                    {filteredCountries.map((country, idx) => (
+                      <div
+                        key={idx}
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Prevents input onBlur from firing first
+                          setOriginCountry(country.name);
+                          setShowCountryDropdown(false);
+                        }}
+                        className="px-4 py-2 cursor-pointer hover:bg-slate-200 flex items-center text-slate-900 text-sm"
+                      >
+                        <img 
+                          src={`https://flagcdn.com/w20/${country.code}.png`}
+                          srcSet={`https://flagcdn.com/w40/${country.code}.png 2x`}
+                          width="20"
+                          alt={country.name}
+                          className="mr-3 shadow-sm rounded-sm"
+                        />
+                        <span className="w-8 text-slate-600 font-medium">{country.code.toUpperCase()}</span>
+                        <span className={originCountry === country.name ? "font-bold text-blue-600" : ""}>{country.name}</span>
+                      </div>
+                    ))}
+                    {filteredCountries.length === 0 && (
+                      <div className="px-4 py-3 text-slate-500 text-sm text-center">No countries found</div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -201,22 +286,27 @@ export default function BookingPage() {
 
             <div>
               <label className="text-xs text-slate-400 mb-1 block">Station Bay Address</label>
-              <input
-                type="text"
+              <select
                 value={pickupLocation}
                 onChange={(e) => setPickupLocation(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:border-emerald-500"
-              />
+              >
+                <option value="Aden Adde Airport Parking B">Aden Adde Airport Parking B</option>
+                <option value="Hargeisa Egal Airport Gates">Hargeisa Egal Airport Gates</option>
+                <option value="Kismayo National Parks">Kismayo National Parks</option>
+                <option value="Garowe City Center Hub">Garowe City Center Hub</option>
+                <option value="Bosaso Port Plaza">Bosaso Port Plaza</option>
+              </select>
             </div>
           </div>
 
-          {/* Step 2: Digital Contract & Evidence Upload */}
+          {/* Step 2: Digital Contract */}
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
             <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center">
-              <FileText className="w-4 h-4 mr-2" /> Step 2: Legal Agreement & 360° Inspection
+              <FileText className="w-4 h-4 mr-2" /> Step 2: Legal Agreement
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               
               {/* Contract Button */}
               <button
@@ -237,25 +327,6 @@ export default function BookingPage() {
                 {signedName ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : <FileText className="w-5 h-5 text-slate-500" />}
               </button>
 
-              {/* Evidence Button */}
-              <button
-                type="button"
-                onClick={() => setShowEvidence(true)}
-                className={`p-4 rounded-2xl border text-left transition flex items-center justify-between ${
-                  evidenceData
-                    ? 'bg-amber-500/10 border-amber-500/50 text-amber-300'
-                    : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-300'
-                }`}
-              >
-                <div className="space-y-1">
-                  <span className="text-xs font-bold block">2. Pre-Drive 360° Inspection</span>
-                  <span className="text-[11px] text-slate-400 block">
-                    {evidenceData ? `Fuel: ${evidenceData.fuelLevelPercentage}% | Verified` : 'Upload walkaround photos/video'}
-                  </span>
-                </div>
-                {evidenceData ? <CheckCircle2 className="w-5 h-5 text-amber-400" /> : <Camera className="w-5 h-5 text-slate-500" />}
-              </button>
-
             </div>
           </div>
 
@@ -263,6 +334,24 @@ export default function BookingPage() {
           <button
             type="button"
             onClick={() => {
+              if (!pickupTime) {
+                alert('Please enter your expected pickup time.');
+                return;
+              }
+              if (!originCountry) {
+                alert('Please select your Expected Country of Origin.');
+                return;
+              }
+
+              const today = new Date().toISOString().split('T')[0];
+              if (startDate < today) {
+                alert('Arrival Date cannot be in the past.');
+                return;
+              }
+              if (endDate < startDate) {
+                alert('Return Date cannot be before the Arrival Date.');
+                return;
+              }
               if (!signedName) {
                 setShowContract(true);
                 return;

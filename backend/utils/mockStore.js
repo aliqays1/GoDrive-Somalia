@@ -146,10 +146,13 @@ let auditLogsStore = [
 ];
 
 export const getCars = () => carsStore;
-export const addCar = (car) => { carsStore.push(car); return car; };
+export const addCar = (car) => { carsStore.unshift(car); return car; };
 export const updateCar = (id, updates) => {
   carsStore = carsStore.map(c => c._id === id ? { ...c, ...updates } : c);
   return carsStore.find(c => c._id === id);
+};
+export const deleteCar = (id) => {
+  carsStore = carsStore.filter(c => c._id !== id);
 };
 
 export const getUsers = () => usersStore;

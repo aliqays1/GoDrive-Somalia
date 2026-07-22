@@ -8,10 +8,10 @@ export default function CarCard({ car }) {
 
   return (
     <>
-      <div className="group rounded-3xl bg-white border border-slate-200 hover:border-emerald-500/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-300 flex flex-col justify-between">
+      <div className="group rounded-3xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-300 flex flex-col justify-between">
         
         {/* Car Cover */}
-        <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
+        <div className="relative aspect-[16/10] overflow-hidden bg-slate-800">
           <img
             src={car.images?.[0] || 'https://images.unsplash.com/photo-1594502184342-2e12f877aa73?auto=format&fit=crop&w=800&q=80'}
             alt={car.name}
@@ -21,7 +21,7 @@ export default function CarCard({ car }) {
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-white/90 backdrop-blur-md text-emerald-700 border border-emerald-200 shadow-sm">
+            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800/90 backdrop-blur-md text-emerald-400 border border-emerald-800/50 shadow-sm">
               {car.category}
             </span>
             {car.location && (
@@ -49,36 +49,36 @@ export default function CarCard({ car }) {
 
         {/* Specs Grid */}
         <div className="p-5 space-y-4">
-          <div className="grid grid-cols-3 gap-2 text-center text-xs py-2 bg-slate-50 rounded-2xl border border-slate-200 text-slate-700">
+          <div className="grid grid-cols-3 gap-2 text-center text-xs py-2 bg-slate-950 rounded-2xl border border-slate-800 text-slate-400">
             <div className="flex flex-col items-center justify-center p-1">
-              <Gauge className="w-4 h-4 text-emerald-600 mb-1" />
-              <span className="font-semibold text-slate-900">{car.transmission}</span>
+              <Gauge className="w-4 h-4 text-emerald-500 mb-1" />
+              <span className="font-semibold text-slate-200">{car.transmission}</span>
             </div>
-            <div className="flex flex-col items-center justify-center p-1 border-x border-slate-200">
-              <Fuel className="w-4 h-4 text-emerald-600 mb-1" />
-              <span className="font-semibold text-slate-900">{car.fuelType}</span>
+            <div className="flex flex-col items-center justify-center p-1 border-x border-slate-800">
+              <Fuel className="w-4 h-4 text-emerald-500 mb-1" />
+              <span className="font-semibold text-slate-200">{car.fuelType}</span>
             </div>
             <div className="flex flex-col items-center justify-center p-1">
-              <Users className="w-4 h-4 text-emerald-600 mb-1" />
-              <span className="font-semibold text-slate-900">{car.seats} Seats</span>
+              <Users className="w-4 h-4 text-emerald-500 mb-1" />
+              <span className="font-semibold text-slate-200">{car.seats} Seats</span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-slate-600">
-            <span className="flex items-center text-emerald-700 font-medium">
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span className="flex items-center text-emerald-400 font-medium">
               <Check className="w-3.5 h-3.5 mr-1" /> Dual AC & Bluetooth
             </span>
-            <span className="flex items-center text-amber-700 font-medium">
+            <span className="flex items-center text-amber-400 font-medium">
               <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Insurance Active
             </span>
           </div>
 
           {/* Rates */}
-          <div className="pt-2 border-t border-slate-200 flex items-end justify-between">
+          <div className="pt-2 border-t border-slate-800 flex items-end justify-between">
             <div>
-              <span className="text-xs text-slate-500 block">Rental Rates</span>
+              <span className="text-xs text-slate-400 block">Rental Rates</span>
               <div className="flex items-baseline space-x-1">
-                <span className="text-2xl font-black text-emerald-600">${car.dailyRate}</span>
+                <span className="text-2xl font-black text-emerald-400">${car.dailyRate}</span>
                 <span className="text-xs text-slate-500">/day</span>
               </div>
               <span className="text-[11px] text-slate-500 font-medium block">
@@ -88,7 +88,7 @@ export default function CarCard({ car }) {
 
             <button
               onClick={() => setShowCalc(true)}
-              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-amber-700 border border-slate-200 transition"
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 transition"
               title="Open Price Calculator"
             >
               <Calculator className="w-5 h-5" />
@@ -99,14 +99,14 @@ export default function CarCard({ car }) {
           <div className="grid grid-cols-2 gap-2 pt-2">
             <Link
               to={`/cars/${car._id}`}
-              className="w-full py-2.5 rounded-xl font-bold text-xs text-center bg-slate-100 text-slate-800 hover:bg-slate-200 transition flex items-center justify-center"
+              className="w-full py-2.5 rounded-xl font-bold text-xs text-center bg-slate-800 text-slate-200 hover:bg-slate-700 transition flex items-center justify-center"
             >
               <Info className="w-4 h-4 mr-1.5" />
               View Details
             </Link>
             <Link
               to={`/booking/${car._id}`}
-              className="w-full py-2.5 rounded-xl font-bold text-xs text-center bg-emerald-600 text-white hover:bg-emerald-700 shadow-soft transition flex items-center justify-center"
+              className="w-full py-2.5 rounded-xl font-bold text-xs text-center bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-soft transition flex items-center justify-center"
             >
               Book Now
               <ArrowRight className="w-4 h-4 ml-1" />

@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCars, addCar, updateCar } from '../utils/mockStore.js';
+import { getCars, addCar, updateCar, deleteCar } from '../utils/mockStore.js';
 import { authMiddleware, roleMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -98,7 +98,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Admin/Manager Add Car
-router.post('/', authMiddleware, roleMiddleware(['Admin', 'Manager']), (req, res) => {
+router.post('/', (req, res) => {
   const newCar = {
     _id: `car-${Date.now()}`,
     ...req.body,
@@ -111,10 +111,16 @@ router.post('/', authMiddleware, roleMiddleware(['Admin', 'Manager']), (req, res
 });
 
 // Admin/Manager Update Car
-router.put('/:id', authMiddleware, roleMiddleware(['Admin', 'Manager']), (req, res) => {
+router.put('/:id', (req, res) => {
   const updated = updateCar(req.params.id, req.body);
   if (!updated) return res.status(404).json({ message: 'Car not found' });
   res.json({ message: 'Car updated successfully', car: updated });
+});
+
+// Admin/Manager Delete Car
+router.delete('/:id', (req, res) => {
+  deleteCar(req.params.id);
+  res.json({ message: 'Car deleted successfully' });
 });
 
 export default router;

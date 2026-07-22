@@ -14,7 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     axios.get('/api/cars')
-      .then(res => setFeaturedCars(res.data.slice(0, 3)))
+      .then(res => setFeaturedCars(res.data))
       .catch(() => {
         // Fallback static
         setFeaturedCars([

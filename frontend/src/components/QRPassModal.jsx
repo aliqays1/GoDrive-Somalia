@@ -3,6 +3,17 @@ import { X, QrCode, Download, Printer, ShieldCheck, MapPin, Calendar, Clock, Car
 
 export default function QRPassModal({ reservation, car, onClose }) {
   const code = reservation?.reservationNumber || 'SMR-2026-00051';
+  
+  // Hardcoded to your local Wi-Fi IP so the phone can scan it directly
+  const params = new URLSearchParams();
+  if (car?.name) params.append('car', car.name);
+  if (reservation?.pickupLocation) params.append('loc', reservation.pickupLocation);
+  if (reservation?.startDate) params.append('date', reservation.startDate);
+  if (reservation?.pickupTime) params.append('time', reservation.pickupTime);
+  if (reservation?.originCountry) params.append('country', reservation.originCountry);
+  if (reservation?.signedName) params.append('name', reservation.signedName);
+
+  const qrUrl = `http://192.168.100.159:3000/pass/${code}?${params.toString()}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
@@ -37,9 +48,7 @@ export default function QRPassModal({ reservation, car, onClose }) {
           {/* QR Code Container */}
           <div className="bg-white p-4 rounded-2xl inline-block shadow-lg mx-auto">
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-                JSON.stringify({ code, company: 'GoDrive Somalia', verifyUrl: `https://godrive.so/verify/${code}` })
-              )}`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrUrl)}`}
               alt="Reservation QR Code"
               className="w-40 h-40 object-contain mx-auto"
             />

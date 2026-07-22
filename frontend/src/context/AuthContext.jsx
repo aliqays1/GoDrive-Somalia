@@ -6,17 +6,9 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('godrive_user');
-    return saved ? JSON.parse(saved) : {
-      _id: 'user-customer',
-      name: 'Abdirahman Hassan',
-      email: 'customer@godrive.so',
-      role: 'Customer',
-      phone: '+252 61 700 8822',
-      status: 'VIP',
-      isVerified: true
-    };
+    return saved ? JSON.parse(saved) : null;
   });
-  const [token, setToken] = useState(() => localStorage.getItem('godrive_token') || 'mock-jwt-token-2026');
+  const [token, setToken] = useState(() => localStorage.getItem('godrive_token') || null);
 
   useEffect(() => {
     if (user) {

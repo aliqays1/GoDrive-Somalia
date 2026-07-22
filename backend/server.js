@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import os from 'os';
 
 import authRoutes from './routes/authRoutes.js';
 import carRoutes from './routes/carRoutes.js';
@@ -35,6 +36,19 @@ app.use('/api/cars', carRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
+
+// System IP endpoint for QR codes
+app.get('/api/ip', (req, res) => {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return res.json({ ip: iface.address });
+      }
+    }
+  }
+  return res.json({ ip: '127.0.0.1' });
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
